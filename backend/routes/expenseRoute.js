@@ -9,15 +9,32 @@ const  sequelize  = require('../config/database');
 
 router.get('/', authenticateToken, async (req, res) => {
   try {
-    console.log("User ID from token: APDHII", req.user.id); // Debugging line
-    const expenses = await Expense.findAll({ where: { userId: req.user.id } });
-    console.log("Expenses fetched:", expenses); // Debugging line
-    res.json(expenses);
+    console.log("biden",req.query.page)
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const offset = (page - 1) * limit;
+
+    const totalCount = await Expense.count({ where: { userId: req.user.id } });
+
+    const expenses = await Expense.findAll({
+      where: { userId: req.user.id },
+      limit: limit,
+      offset: offset,
+    });
+
+    const totalPages = Math.ceil(totalCount / limit);
+     console.log("biden",expenses,totalCount,totalPages,page)
+    res.json({
+      expenses: expenses,
+      totalCount: totalCount,
+      totalPages: totalPages,
+      currentPage: page
+    });
   } catch (err) {
-    console.error("Error fetching expenses:", err); // Debugging line
     res.status(500).json({ message: 'Error fetching expenses', error: err.message });
   }
 });
+
 
 router.post('/', authenticateToken, async (req, res) => {
   const { amount, description, category } = req.body;

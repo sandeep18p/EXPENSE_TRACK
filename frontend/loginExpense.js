@@ -1,26 +1,34 @@
-
 const expenseForm = document.getElementById('expense-form');
 const expensesList = document.getElementById('expenses');
 const apiUrl = 'http://localhost:3000/api/expenses';
+let currentPage = 1;
+let totalPages = 1; // Assuming there's at least one page of expenses
 
 window.onload = function() {
-  fetchExpenses();
+  fetchExpenses(currentPage);
 };
 
-async function fetchExpenses() {
+async function fetchExpenses(page) {
   try {
     const token = localStorage.getItem('authToken');
-    const response = await axios.get(apiUrl, {
+    console.log("open")
+    const response = await axios.get(`${apiUrl}?page=${page}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
-    const expenses = response.data;
+    console.log(response)
+    const expenses = response.data.expenses;
+    
+    totalPages = response.data.totalPages; // Assuming the API returns the total number of pages
+    currentPage = page;
 
     expensesList.innerHTML = '';
     expenses.forEach(expense => {
       addExpenseToDOM(expense);
     });
+
+    updatePaginationControls();
   } catch (error) {
     alert('Failed to fetch expenses. Please try again.');
   }
@@ -50,7 +58,7 @@ async function addExpense(event) {
 
     if (response.status === 200) {
       alert('Expense added successfully!');
-      fetchExpenses(); // Refresh the list of expenses
+      fetchExpenses(currentPage); // Refresh the list of expenses
     }
   } catch (error) {
     alert('Failed to add expense. Please try again.');
@@ -72,7 +80,7 @@ async function deleteExpense(expenseId) {
 
     if (response.status === 200) {
       alert('Expense deleted!');
-      fetchExpenses(); // Refresh the list of expenses
+      fetchExpenses(currentPage); // Refresh the list of expenses
     }
   } catch (error) {
     alert('Failed to delete expense. Please try again.');
@@ -81,6 +89,7 @@ async function deleteExpense(expenseId) {
 
 function addExpenseToDOM(expense) {
   const li = document.createElement('li');
+  li.classList.add('list-group-item');
   li.innerHTML = `
     <span><strong>${expense.amount}</strong> - ${expense.description} (${expense.category})</span>
     <div>
@@ -182,7 +191,6 @@ document.getElementById('make-payment').addEventListener('click', async function
   }
 });
 
-
 function parseJwt(token) {
   var base64Url = token.split('.')[1];
   var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -238,8 +246,6 @@ function renderUserData(users) {
   const userList = document.getElementById('user-list');
   userList.innerHTML = ''; // Clear any existing content
 
-
-
   users.forEach(user => {
     const li = document.createElement('li');
     li.classList.add('user-item');
@@ -251,4 +257,25 @@ function renderUserData(users) {
     `;
     userList.appendChild(li);
   });
+}
+
+function updatePaginationControls() {
+  const paginationControls = document.getElementById('pagination-controls');
+  paginationControls.innerHTML = ''; // Clear any existing pagination buttons
+
+  if (currentPage > 1) {
+    const prevButton = document.createElement('button');
+    prevButton.textContent = 'Previous';
+    prevButton.classList.add('btn', 'btn-custom');
+    prevButton.addEventListener('click', () => fetchExpenses(currentPage - 1));
+    paginationControls.appendChild(prevButton);
+  }
+
+  if (currentPage < totalPages) {
+    const nextButton = document.createElement('button');
+    nextButton.textContent = 'Next';
+    nextButton.classList.add('btn', 'btn-custom');
+    nextButton.addEventListener('click', () => fetchExpenses(currentPage + 1));
+    paginationControls.appendChild(nextButton);
+  }
 }
