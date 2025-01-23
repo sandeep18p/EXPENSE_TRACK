@@ -36,7 +36,7 @@ form.addEventListener('submit', async (e) => {
          
         alert(response.data.message);
 
-        window.location.href = 'loginExpense.html';
+        window.location.href = 'Dashboard.html';
       } else {
         alert('Authorization token not found.');
       }

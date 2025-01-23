@@ -1,0 +1,111 @@
+body {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    font-family: 'Roboto', sans-serif;
+    color: black;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .container {
+    max-width: 900px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    padding: 20px;
+    font-size: 1.8rem;
+    text-transform: uppercase;
+  }
+
+  .card-body {
+    padding: 30px;
+  }
+
+  h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 25px;
+  }
+
+  .btn-custom {
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-custom:hover {
+    background: #0056b3;
+  }
+
+  .list-group-item {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    color: #333;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #ccc;
+    font-size: 14px;
+  }
+
+  .form-label {
+    font-weight: bold;
+    color: #555;
+  }
+
+  .form-control, .form-select {
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    box-shadow: none;
+    transition: all 0.3s ease;
+  }
+
+  .form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+
+  .text-center button {
+    margin-top: 15px;
+  }
+
+  #premium-message {
+    font-size: 1.2rem;
+    color: #28a745;
+    font-weight: bold;
+  }
+
+  #make-payment {
+    display: inline-block;
+  }
+
+  #pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Optional, space between the buttons */
+  }
+  
+  #pagination-controls button {
+    padding: 10px 20px;
+    font-size: 16px;
+  }

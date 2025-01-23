@@ -8,19 +8,31 @@ window.onload = function() {
   fetchExpenses(currentPage);
 };
 
+const itemsPerPageSelect = document.getElementById('items-per-page');
+let itemsPerPage = localStorage.getItem('itemsPerPage') || 5;
+
+itemsPerPageSelect.value = itemsPerPage;
+
+itemsPerPageSelect.addEventListener('change', function() {
+  itemsPerPage = parseInt(this.value);
+  localStorage.setItem('itemsPerPage', itemsPerPage);
+  fetchExpenses(1);
+});
+
+
 async function fetchExpenses(page) {
   try {
     const token = localStorage.getItem('authToken');
-    console.log("open")
-    const response = await axios.get(`${apiUrl}?page=${page}`, {
+    itemsPerPage = localStorage.getItem('itemsPerPage') || 5;
+
+    const response = await axios.get(`${apiUrl}?page=${page}&limit=${itemsPerPage}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
-    console.log(response)
+
     const expenses = response.data.expenses;
-    
-    totalPages = response.data.totalPages; // Assuming the API returns the total number of pages
+    totalPages = response.data.totalPages;
     currentPage = page;
 
     expensesList.innerHTML = '';
@@ -33,6 +45,7 @@ async function fetchExpenses(page) {
     alert('Failed to fetch expenses. Please try again.');
   }
 }
+
 
 async function addExpense(event) {
   event.preventDefault();
@@ -208,7 +221,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (user.isPremium) {
       document.getElementById('premium-message').style.display = 'block';
       document.getElementById('make-payment').style.display = 'none';
-      
+      document.getElementById('user-list').style.display = 'block';
+      document.getElementById('show').style.display = 'block';
+      document.getElementById('reporting').style.display = 'block';
       try {
         const response = await axios.get('http://localhost:3000/api/expenses/total-expenses', {
           headers: {
@@ -223,6 +238,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     } else {
       document.getElementById('premium-message').style.display = 'none';
       document.getElementById('make-payment').style.display = 'block';
+      document.getElementById('user-list').style.display = 'none';
+      document.getElementById('show').style.display = 'none';
+      document.getElementById('reporting').style.display = 'none';
     }
   }
 });
@@ -261,7 +279,7 @@ function renderUserData(users) {
 
 function updatePaginationControls() {
   const paginationControls = document.getElementById('pagination-controls');
-  paginationControls.innerHTML = ''; // Clear any existing pagination buttons
+  paginationControls.innerHTML = '';
 
   if (currentPage > 1) {
     const prevButton = document.createElement('button');
@@ -279,3 +297,15 @@ function updatePaginationControls() {
     paginationControls.appendChild(nextButton);
   }
 }
+
+
+document.getElementById('report-generation').addEventListener('click', function() {
+  window.location.href = 'premiumReport.html'; 
+});
+
+document.getElementById('logout').addEventListener('click', function() {
+
+  localStorage.clear();
+
+  window.location.href = 'login.html';
+});

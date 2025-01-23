@@ -114,3 +114,23 @@ button:active {
     padding: 20px;
   }
 }
+
+/* Center the login link */
+.login-link {
+  text-align: center; /* Center the text */
+  padding-top: 10px; /* Add padding to the top */
+}
+
+.login-link p {
+  margin: 0;
+}
+
+.login-link a {
+  text-decoration: none; /* Remove underline */
+  color: #007bff; /* Blue color for the link */
+}
+
+.login-link a:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
