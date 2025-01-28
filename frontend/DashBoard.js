@@ -1,6 +1,6 @@
 const expenseForm = document.getElementById('expense-form');
 const expensesList = document.getElementById('expenses');
-const apiUrl = 'http://localhost:3000/api/expenses';
+const apiUrl = 'http://localhost:3000/expenses';
 let currentPage = 1;
 let totalPages = 1; // Assuming there's at least one page of expenses
 
@@ -118,7 +118,7 @@ expenseForm.addEventListener('submit', addExpense);
 document.getElementById('make-payment').addEventListener('click', async function() {
   try {
     const token = localStorage.getItem('authToken');
-    const response = await axios.post('http://localhost:3000/api/expenses/paymentOrder1/create-order', {}, {
+    const response = await axios.post('http://localhost:3000/expenses/paymentOrder1/create-order', {}, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -139,7 +139,7 @@ document.getElementById('make-payment').addEventListener('click', async function
         // Handle post-payment actions here
         try {
           console.log("going")
-          const updateResponse =  await axios.post('http://localhost:3000/api/expenses/paymentOrder1/update-status', {
+          const updateResponse =  await axios.post('http://localhost:3000/expenses/paymentOrder1/update-status', {
             orderId: id,
             status: 'SUCCESS',
             paymentId: response.razorpay_payment_id
@@ -183,7 +183,7 @@ document.getElementById('make-payment').addEventListener('click', async function
 
       // Update order status to FAILED
       try {
-        await axios.post('http://localhost:3000/api/expenses/paymentOrder1/update-status', {
+        await axios.post('http://localhost:3000/expenses/paymentOrder1/update-status', {
           orderId: id,
           status: 'FAILED',
           paymentId: response.error.metadata.payment_id
@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       document.getElementById('show').style.display = 'block';
       document.getElementById('reporting').style.display = 'block';
       try {
-        const response = await axios.get('http://localhost:3000/api/expenses/total-expenses', {
+        const response = await axios.get('http://localhost:3000/expenses/total-expenses', {
           headers: {
             'Authorization': `Bearer ${token}`
           }, })
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 document.getElementById('show-leaderboard').addEventListener('click', async function() {
   try {
     const token = localStorage.getItem('authToken');
-    const response = await axios.get('http://localhost:3000/api/expenses/total-expenses', {
+    const response = await axios.get('http://localhost:3000/expenses/total-expenses', {
       headers: {
         'Authorization': `Bearer ${token}`
       }

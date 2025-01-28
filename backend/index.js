@@ -26,9 +26,10 @@ app.use(function(req, res, next) {
 
 // Routes
 app.use('/user', userRoutes);  //for login and signup
-app.use('/user/reset', resetPasswordRoutes);
-app.use('/api/expenses', expenseRoutes);
-app.use('/api/expenses/paymentOrder1', paymentRoutes);
+app.use('/expenses', expenseRoutes);  //for expenses add,delete,edit
+app.use('/user/reset', resetPasswordRoutes); //for reseting password
+
+app.use('/expenses/paymentOrder1', paymentRoutes); //for payment via rajorpay
 app.use('/api/reports', reportRoutes);
 
 // Sync Sequelize models and start server

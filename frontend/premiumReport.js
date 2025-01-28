@@ -118,6 +118,15 @@ function displayExpenses(expensesData) {
   // Clear the table body
   expensesTableBody.innerHTML = "";
 
+  tthead.innerHTML = ` 
+    <tr>
+       <th>Date</th>
+        <th>Description</th>
+        <th>Category</th>
+        <th>Expense</th>
+    </tr>
+ `;
+
   if (expensesData.length === 0) {
     showError("No expenses found for the selected filter.");
     expenseTable.style.display = "none";
