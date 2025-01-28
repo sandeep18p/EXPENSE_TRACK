@@ -5,6 +5,7 @@ const userRoutes = require('./routes/userRoutes');
 const expenseRoutes = require('./routes/expenseRoute');
 const paymentRoutes = require('./routes/paymentRoutes');
 const resetPasswordRoutes = require('./routes/resetPasswordRoutes');
+const  reportRoutes = require('./routes/report');
 const cors = require("cors");
 const cookieParser = require('cookie-parser');
 
@@ -24,10 +25,11 @@ app.use(function(req, res, next) {
 });
 
 // Routes
-app.use('/user', userRoutes);
+app.use('/user', userRoutes);  //for login and signup
 app.use('/user/reset', resetPasswordRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/expenses/paymentOrder1', paymentRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Sync Sequelize models and start server
 (async () => {

@@ -1,166 +1,261 @@
-// Sample expenses data for demonstration
-const expensesData = [
-    { date: "01-03-2021", description: "Milk", category: "Grocery", income: 0, expense: 60 },
-    { date: "04-03-2021", description: "Salary", category: "Income", income: 40000, expense: 0 },
-    { date: "04-03-2021", description: "Fruits", category: "Grocery", income: 0, expense: 500 },
-    { date: "04-03-2021", description: "Medicines", category: "Health", income: 0, expense: 50 },
-    { date: "05-03-2021", description: "Milk", category: "Grocery", income: 0, expense: 60 },
-    { date: "05-03-2021", description: "Fees", category: "Education", income: 0, expense: 4000 },
-    { date: "05-03-2021", description: "Party", category: "Entertainment", income: 0, expense: 500 },
-    { date: "05-03-2021", description: "Travel", category: "Transport", income: 0, expense: 500 },
-    // Add more entries here for testing
-  ];
-  
-  // Pagination variables
-  let currentPage = 1;
-  const rowsPerPage = 10;
-  
-  // DOM elements
-  const expensesTableBody = document.querySelector("#expensesTable tbody");
-  const prevPageButton = document.querySelector("#prevPage");
-  const nextPageButton = document.querySelector("#nextPage");
-  const pageInfo = document.querySelector("#pageInfo");
-  
-  // Functions for pagination
-  function displayExpenses(page = 1) {
-    const startIndex = (page - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    const paginatedExpenses = expensesData.slice(startIndex, endIndex);
-  
-    // Clear the table body
-    expensesTableBody.innerHTML = "";
-  
-    // Populate the table with paginated data
-    paginatedExpenses.forEach((expense) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${expense.date}</td>
-        <td>${expense.description}</td>
-        <td>${expense.category}</td>
-        <td>${expense.income.toFixed(2)}</td>
-        <td>${expense.expense.toFixed(2)}</td>
-      `;
-      expensesTableBody.appendChild(row);
+const API_BASE_URL = "http://localhost:3000/api/reports"; // Base URL for API endpoints
+
+// Retrieve token from localStorage
+const token = localStorage.getItem("authToken");
+
+// DOM elements
+const expensesTableBody = document.querySelector("#expensesTableBody");
+const tthead = document.querySelector("#tthead");
+const filterSelect = document.querySelector("#filter");
+const applyFilterButton = document.querySelector("#applyFilter");
+const downloadButton = document.querySelector("#downloadButton");
+const expenseTable = document.querySelector("#expenseTable");
+const loadingIndicator = document.querySelector("#loading");
+const errorDiv = document.querySelector("#error");
+
+let isPremiumUser = false; // Change to true for premium users
+let expensesData = []; // Global variable to store fetched expenses
+
+// Fetch data from API and populate the table
+async function fetchExpenses(filter) {
+  try {
+    showLoading(true); // Show loading spinner
+
+    const response = await fetch(`${API_BASE_URL}/${filter}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`, // Pass the token in the Authorization header
+      },
     });
-  
-    // Update pagination controls
-    updatePaginationControls();
-  }
-  
-  function updatePaginationControls() {
-    const totalPages = Math.ceil(expensesData.length / rowsPerPage);
-  
-    // Update page info
-    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-  
-    // Enable/disable buttons
-    prevPageButton.disabled = currentPage === 1;
-    nextPageButton.disabled = currentPage === totalPages;
-  }
-  
-  // Event listeners for pagination buttons
-  prevPageButton.addEventListener("click", () => {
-    if (currentPage > 1) {
-      currentPage--;
-      displayExpenses(currentPage);
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(`Failed to fetch expenses: ${errorMessage}`);
     }
-  });
-  
-  nextPageButton.addEventListener("click", () => {
-    const totalPages = Math.ceil(expensesData.length / rowsPerPage);
-    if (currentPage < totalPages) {
-      currentPage++;
-      displayExpenses(currentPage);
-    }
-  });
-  
-  // Initial display
-  displayExpenses();
-  
-  // Filter functionality
-  const filterSelect = document.querySelector("#filter");
-  const applyFilterButton = document.querySelector("#applyFilter");
-  
-  applyFilterButton.addEventListener("click", () => {
-    const filterValue = filterSelect.value;
-  
-    // Apply filters (example logic)
-    const filteredExpenses = expensesData.filter((expense) => {
-      const expenseDate = new Date(expense.date.split("-").reverse().join("-"));
-      const today = new Date();
-  
-      if (filterValue === "daily") {
-        return expenseDate.toDateString() === today.toDateString();
-      } else if (filterValue === "weekly") {
-        const oneWeekAgo = new Date(today);
-        oneWeekAgo.setDate(today.getDate() - 7);
-        return expenseDate >= oneWeekAgo && expenseDate <= today;
-      } else if (filterValue === "monthly") {
-        return (
-          expenseDate.getMonth() === today.getMonth() &&
-          expenseDate.getFullYear() === today.getFullYear()
-        );
-      } else {
-        return true; // Show all expenses
-      }
+
+    const data = await response.json();
+    expensesData = data.data; // Store data globally
+    displayExpenses(expensesData);
+    showError(""); // Clear any error message
+  } catch (error) {
+    console.error(error.message);
+    showError("Failed to fetch expenses. Please check your authentication or try again.");
+  } finally {
+    showLoading(false); // Hide loading spinner
+  }
+}
+
+async function fetchExpensesWeekly(filter) {
+  try {
+    showLoading(true); // Show loading spinner
+    console.log(filter)
+    const response = await fetch(`${API_BASE_URL}/${filter}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`, // Pass the token in the Authorization header
+      },
     });
-  
-    // Update the table with filtered data
-    displayFilteredExpenses(filteredExpenses);
-  });
-  
-  function displayFilteredExpenses(filteredExpenses) {
-    expensesTableBody.innerHTML = "";
-  
-    filteredExpenses.forEach((expense) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${expense.date}</td>
-        <td>${expense.description}</td>
-        <td>${expense.category}</td>
-        <td>${expense.income.toFixed(2)}</td>
-        <td>${expense.expense.toFixed(2)}</td>
-      `;
-      expensesTableBody.appendChild(row);
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(`Failed to fetch expenses: ${errorMessage}`);
+    }
+
+    const data = await response.json();
+    expensesData = data.data; // Store data globally
+    console.log(expensesData)
+    displayExpensesWeekly(expensesData);
+    showError(""); // Clear any error message
+  } catch (error) {
+    console.error(error.message);
+    showError("Failed to fetch expenses. Please check your authentication or try again.");
+  } finally {
+    showLoading(false); // Hide loading spinner
+  }
+}
+
+async function fetchExpensesMonthly(filter) {
+  try {
+    showLoading(true); // Show loading spinner
+    console.log(filter)
+    const response = await fetch(`${API_BASE_URL}/${filter}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`, // Pass the token in the Authorization header
+      },
     });
-  
-    // Update pagination controls for filtered data
-    pageInfo.textContent = `Filtered Results`;
-    prevPageButton.disabled = true;
-    nextPageButton.disabled = true;
-  }
-  
-  // Premium features
-  const downloadButton = document.querySelector("#downloadButton");
-  const isPremiumUser = false; // Set to true if user is premium
-  
-  function updateDownloadButtonStatus() {
-    if (isPremiumUser) {
-      downloadButton.disabled = false;
-      downloadButton.classList.add("premium-enabled");
-      downloadButton.textContent = "Download Expenses";
-    } else {
-      downloadButton.disabled = true;
-      downloadButton.classList.remove("premium-enabled");
-      downloadButton.textContent = "Download Expenses (Premium Only)";
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(`Failed to fetch expenses: ${errorMessage}`);
     }
+
+    const data = await response.json();
+    expensesData = data.data; // Store data globally
+    console.log(expensesData)
+    displayExpensesMonthly(expensesData);
+    showError(""); // Clear any error message
+  } catch (error) {
+    console.error(error.message);
+    showError("Failed to fetch expenses. Please check your authentication or try again.");
+  } finally {
+    showLoading(false); // Hide loading spinner
   }
-  
-  downloadButton.addEventListener("click", () => {
-    if (isPremiumUser) {
-      const fileContent = JSON.stringify(expensesData, null, 2);
-      const blob = new Blob([fileContent], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "expenses.json";
-      a.click();
-      URL.revokeObjectURL(url);
-    } else {
-      alert("This feature is available only for premium users!");
-    }
+}
+
+
+// Display expenses in the table
+function displayExpenses(expensesData) {
+  if (!Array.isArray(expensesData)) {
+    console.error("Expenses data is not an array");
+    showError("Invalid data format received.");
+    return;
+  }
+
+  // Clear the table body
+  expensesTableBody.innerHTML = "";
+
+  if (expensesData.length === 0) {
+    showError("No expenses found for the selected filter.");
+    expenseTable.style.display = "none";
+    return;
+  }
+
+  // Populate the table with data
+  expensesData.forEach((expense) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${expense.date || "N/A"}</td>
+      <td>${expense.description || "N/A"}</td>
+      <td>${expense.category || "N/A"}</td>
+      
+   
+      <td>${expense.income || "0.00"}</td>
+    `;
+    expensesTableBody.appendChild(row);
   });
+
+  expenseTable.style.display = "table"; // Show table
+}
+
+function displayExpensesWeekly(expensesData) {
+  if (!Array.isArray(expensesData)) {
+    console.error("Expenses data is not an array");
+    showError("Invalid data format received.");
+    return;
+  }
+
+  // Clear the table body
   
-  // Update premium button status on load
-  updateDownloadButtonStatus();
+  tthead.innerHTML = ` 
+    <tr>
+      <th>Week Number</th>
+      <th>Expense</th>
+    </tr>
+ `;
+  expensesTableBody.innerHTML = "";
+
+  if (expensesData.length === 0) {
+    showError("No expenses found for the selected filter.");
+    expenseTable.style.display = "none";
+    return;
+  }
+
+  // Populate the table with data
+  expensesData.forEach((expense) => {
+    console.log(expense)
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${expense.week}</td>
+      <td>${expense.totalAmount}</td>
+    `;
+    expensesTableBody.appendChild(row);
+  });
+
+  expenseTable.style.display = "table"; // Show table
+}
+
+function displayExpensesMonthly(expensesData) {
+  if (!Array.isArray(expensesData)) {
+    console.error("Expenses data is not an array");
+    showError("Invalid data format received.");
+    return;
+  }
+
+  // Clear the table body
   
+  tthead.innerHTML = ` 
+    <tr>
+      <th>Month Number</th>
+      <th>Expense</th>
+    </tr>
+ `;
+  expensesTableBody.innerHTML = "";
+
+  if (expensesData.length === 0) {
+    showError("No expenses found for the selected filter.");
+    expenseTable.style.display = "none";
+    return;
+  }
+
+  // Populate the table with data
+  expensesData.forEach((expense) => {
+    console.log(expense)
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${expense.month}</td>
+      <td>${expense.totalAmount}</td>
+    `;
+    expensesTableBody.appendChild(row);
+  });
+
+  expenseTable.style.display = "table"; // Show table
+}
+
+// Show or hide loading spinner
+function showLoading(show) {
+  loadingIndicator.style.display = show ? "block" : "none";
+}
+
+// Show error messages
+function showError(message) {
+  errorDiv.textContent = message;
+  errorDiv.style.display = message ? "block" : "none";
+}
+
+// Download expenses as JSON
+downloadButton.addEventListener("click", () => {
+  if (isPremiumUser) {
+    const fileContent = JSON.stringify(expensesData, null, 2);
+    const blob = new Blob([fileContent], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "expenses.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  } else {
+    alert("This feature is available only for premium users!");
+  }
+});
+
+// Apply filter button click
+applyFilterButton.addEventListener("click", () => {
+  console.log("1")
+  const filterValue = filterSelect.value;
+  if(filterValue == "daily"){
+    fetchExpenses(filterValue);
+  }else if(filterValue == "weekly"){
+    console.log("1")
+    fetchExpensesWeekly(filterValue)
+  }else{
+    fetchExpensesMonthly(filterValue)
+  }
+ 
+});
+
+// Initialize the app
+fetchExpenses("daily"); // Fetch daily expenses by default
