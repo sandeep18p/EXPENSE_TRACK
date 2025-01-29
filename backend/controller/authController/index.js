@@ -33,7 +33,7 @@ const signup = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  console.log("gogp", JWT_SECRET);
+  
   try {
     const user = await User.findOne({ where: { email } });
     if (!user) {
@@ -44,8 +44,8 @@ const login = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-   console.log("gogp", JWT_SECRET);
-    const token = jwt.sign({ id: user.id, email: user.email, isPremium: user.isPremium }, JWT_SECRET, { expiresIn: '1h' });
+  
+    const token = jwt.sign({ id: user.id, email: user.email, isPremium: user.isPremium }, JWT_SECRET, { expiresIn: '6h' });
 
     res.setHeader('authorization', `Bearer ${token}`);
 
