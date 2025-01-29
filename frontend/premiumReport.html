@@ -35,10 +35,14 @@
     </thead>
     <tbody id="expensesTableBody"></tbody>
   </table>
-
+   <div id="DownloadedData">
+    <ul id="DownloadedDataList"></ul>
+   </div>
   <!-- Download Button -->
-  <button id="downloadButton" disabled style="margin-top: 20px;">Download Expenses (Premium Only)</button>
-
+   <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px;">
+    <button id="downloadButton" style="margin: 20px; cursor: pointer;" hove>Download Expenses (Premium Only)</button>
+   </div>
+  
   <!-- JavaScript -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="premiumReport.js"></script>

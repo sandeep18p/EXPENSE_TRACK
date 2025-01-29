@@ -235,21 +235,7 @@ function showError(message) {
   errorDiv.style.display = message ? "block" : "none";
 }
 
-// Download expenses as JSON
-downloadButton.addEventListener("click", () => {
-  if (isPremiumUser) {
-    const fileContent = JSON.stringify(expensesData, null, 2);
-    const blob = new Blob([fileContent], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "expenses.json";
-    a.click();
-    URL.revokeObjectURL(url);
-  } else {
-    alert("This feature is available only for premium users!");
-  }
-});
+
 
 // Apply filter button click
 applyFilterButton.addEventListener("click", () => {
@@ -268,3 +254,36 @@ applyFilterButton.addEventListener("click", () => {
 
 // Initialize the app
 fetchExpenses("daily"); // Fetch daily expenses by default
+
+
+// Download expenses as JSON
+downloadButton.addEventListener("click", async () => {
+  const response = await fetch(`${API_BASE_URL}/download`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`, // Pass the token in the Authorization header
+    },
+  });
+});
+
+
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/downloaded-files`, {
+      headers: { "Authorization": `Bearer ${token}` },
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch files");
+
+    const { files } = await response.json();
+
+    const listElement = document.getElementById("DownloadedDataList");
+    listElement.innerHTML = files
+      .map(file => `<li><a href="${file.fileURL}" target="_blank">Download File: ${file.fileURL}</a></li>`)
+      .join('');
+  } catch (error) {
+    console.error(error);
+    alert("Failed to load files.");
+  }
+});

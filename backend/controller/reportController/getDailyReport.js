@@ -20,6 +20,9 @@ const getDailyReport = async (req, res) => {
     }));
 
     // Send the formatted data as JSON
+    if(req.s3==true){
+      return report;
+    }
     res.status(200).json({ success: true, data: report });
   } catch (error) {
     console.error(error);
