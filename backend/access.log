@@ -1,0 +1,7 @@
+::1 - - [29/Jan/2025:06:48:49 +0000] "POST /user/login HTTP/1.1" 200 257 "http://127.0.0.1:5500/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
+::1 - - [29/Jan/2025:06:48:51 +0000] "GET /expenses/total-expenses HTTP/1.1" 304 - "http://127.0.0.1:5500/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
+::1 - - [29/Jan/2025:06:48:51 +0000] "GET /expenses?page=1&limit=5 HTTP/1.1" 200 887 "http://127.0.0.1:5500/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
+::1 - - [29/Jan/2025:06:48:53 +0000] "GET /expenses/total-expenses HTTP/1.1" 304 - "http://127.0.0.1:5500/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
+::1 - - [29/Jan/2025:06:48:53 +0000] "GET /expenses?page=1&limit=5 HTTP/1.1" 304 - "http://127.0.0.1:5500/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
+::1 - - [29/Jan/2025:06:49:05 +0000] "DELETE /expenses/4 HTTP/1.1" 200 42 "http://127.0.0.1:5500/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
+::1 - - [29/Jan/2025:06:49:07 +0000] "GET /expenses?page=1&limit=5 HTTP/1.1" 200 882 "http://127.0.0.1:5500/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"

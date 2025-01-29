@@ -1,4 +1,6 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const bodyParser = require('body-parser');
 const sequelize = require('./config/database');
 const userRoutes = require('./routes/userRoutes');
@@ -8,6 +10,7 @@ const resetPasswordRoutes = require('./routes/resetPasswordRoutes');
 const  reportRoutes = require('./routes/report');
 const cors = require("cors");
 const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
 
 const app = express();
 
@@ -19,10 +22,14 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(function(req, res, next) {
   res.setHeader('Access-Control-Expose-Headers', 'Authorization');
   next();
 });
+
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
+app.use(morgan('combined', { stream: accessLogStream }));
 
 // Routes
 app.use('/user', userRoutes);  //for login and signup
