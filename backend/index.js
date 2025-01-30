@@ -13,8 +13,8 @@ const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 
 const app = express();
-
-const PORT = 3000;
+require('dotenv').config();
+const PORT = process.env.PORT || 5000;
 app.use(cookieParser());
 app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Auth-Token'],
