@@ -1,12 +1,26 @@
+
+
 const expenseForm = document.getElementById('expense-form');
 const expensesList = document.getElementById('expenses');
 const apiUrl = 'http://localhost:3000/expenses';
 let currentPage = 1;
 let totalPages = 1; // Assuming there's at least one page of expenses
 
-window.onload = function() {
+document.addEventListener('DOMContentLoaded', async function() {
+     const parseD =  parseJwt(localStorage.getItem('authToken'));
+     console.log(parseD);
+     if(parseD.isPremium === false) {
+       document.getElementById('report-generation').style.display = 'none'; 
+       document.getElementById('show').style.display = 'none'; 
+     }else{
+      document.getElementById('premium-message').style.display = 'block'; 
+      document.getElementById('make-payment').style.display = 'none'; 
+     }
+})
+
+document.getElementById('showData').addEventListener('click', async function() { 
   fetchExpenses(currentPage);
-};
+})
 
 const itemsPerPageSelect = document.getElementById('items-per-page');
 let itemsPerPage = localStorage.getItem('itemsPerPage') || 5;
@@ -78,9 +92,65 @@ async function addExpense(event) {
   }
 }
 
-async function editExpense(expenseId) {
-  alert(`Editing expense with ID: ${expenseId}`);
+function editExpense(expenseId) {
+  document.getElementById("editExpenseForm").style.display = "block";
+  document.getElementById("expenseForm").dataset.expenseId = expenseId;
+  console.log(expenseId);
+
+  document.getElementById("expenseForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const amount = document.getElementById("amount1").value.trim();
+      const category = document.getElementById("category1").value.trim();
+      const description = document.getElementById("description1").value.trim();
+
+      if (!amount || isNaN(amount) || Number(amount) <= 0) {
+          alert("Please enter a valid amount.");
+          return;
+      }
+      if (!category) {
+          alert("Please enter a valid category.");
+          return;
+      }
+      if (!description) {
+          alert("Please enter a valid description.");
+          return;
+      }
+      const obj = { expenseId, amount, category, description };
+      const token = localStorage.getItem('authToken');
+      try {
+        const response = await fetch(`${apiUrl}/editExpense`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(obj)
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert("Expense updated successfully");
+            document.getElementById("editExpenseForm").style.display = "none";
+        } else {
+            alert(result.message || "Error updating expense");
+        }
+    } catch (error) {
+        console.error("Error updating expense:", error);
+        alert("An error occurred while updating the expense");
+    }
+    
+  });
+
+  document.getElementById("cancelEdit").addEventListener("click", function() {
+      document.getElementById("editExpenseForm").style.display = "none";
+  });
 }
+
+document.getElementById("cancelEdit").addEventListener("click", function () {
+  document.getElementById("editExpenseForm").style.display = "none";
+});
+
 
 async function deleteExpense(expenseId) {
   try {
@@ -214,36 +284,7 @@ function parseJwt(token) {
   return JSON.parse(jsonPayload);
 }
 
-document.addEventListener('DOMContentLoaded', async function() {
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    const user = parseJwt(token);
-    if (user.isPremium) {
-      document.getElementById('premium-message').style.display = 'block';
-      document.getElementById('make-payment').style.display = 'none';
-      document.getElementById('user-list').style.display = 'block';
-      document.getElementById('show').style.display = 'block';
-      document.getElementById('reporting').style.display = 'block';
-      try {
-        const response = await axios.get('http://localhost:3000/expenses/total-expenses', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }, })
-          console.log(response.data)  //yolo
-          renderUserData(response.data); 
-        }
-      catch (error) {
-        alert('Failed to fetch expenses. Please try again.');
-      }
-    } else {
-      document.getElementById('premium-message').style.display = 'none';
-      document.getElementById('make-payment').style.display = 'block';
-      document.getElementById('user-list').style.display = 'none';
-      document.getElementById('show').style.display = 'none';
-      document.getElementById('reporting').style.display = 'none';
-    }
-  }
-});
+
 
 document.getElementById('show-leaderboard').addEventListener('click', async function() {
   try {

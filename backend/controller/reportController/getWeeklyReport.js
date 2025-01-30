@@ -32,7 +32,7 @@ const getWeeklyReport = async (req, res) => {
       order: [['week', 'ASC']],
     });
 
-    res.status(200).json({ success: true, data: weeklyReport });
+    return res.status(200).json({ success: true, data: weeklyReport });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Failed to fetch weekly report.' });

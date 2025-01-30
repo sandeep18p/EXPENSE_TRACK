@@ -32,7 +32,7 @@ const getMonthlyReport = async (req, res) => {
       order: [['month', 'ASC']], // Order by month
     });
 
-    res.status(200).json({ success: true, data: monthlyReport });
+   return res.status(200).json({ success: true, data: monthlyReport });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Failed to fetch monthly report.' });

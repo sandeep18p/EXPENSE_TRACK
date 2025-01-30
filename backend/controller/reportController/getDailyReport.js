@@ -23,7 +23,7 @@ const getDailyReport = async (req, res) => {
     if(req.s3==true){
       return report;
     }
-    res.status(200).json({ success: true, data: report });
+   return res.status(200).json({ success: true, data: report });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Failed to fetch daily report.' });

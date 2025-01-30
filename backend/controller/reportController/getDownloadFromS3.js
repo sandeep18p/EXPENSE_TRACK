@@ -13,7 +13,7 @@ const getDownloadFromS3 = async (req, res) => {
         const fileURL = await S3services.uploadToS3(stringifiedExpenses, filename);
         //    console.log("fanny ",fileUrl)
         await DownloadedFiles.create({ userId, fileURL });
-        res.status(200).json({ fileURL, success: true });
+       return res.status(200).json({ fileURL, success: true });
     } catch (error) { 
         console.error('Error getting expenses:', error);
         }
