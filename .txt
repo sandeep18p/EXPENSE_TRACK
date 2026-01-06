@@ -1,1 +1,12 @@
-tcp
+select master_designation.designation_name, emp_login_detail.user_name, emp_login_detail.f_name,
+master_circle.circleName, master_division.divisionName, master_sub_division.subDivisionName,
+master_range.rangeName, master_sub_range.sub_rang_name, master_beat.beat_name
+from emp_login_detail 
+inner join master_circle on master_circle.id = emp_login_detail.circle_id
+left join master_division on master_division.id = emp_login_detail.division_id and division_id = 24
+left join master_sub_division on master_sub_division.id = emp_login_detail.sub_division_id
+left join master_range on master_range.id = emp_login_detail.rang_id
+left join master_sub_range on master_sub_range.id = emp_login_detail.sub_rang_id
+left join master_beat on master_beat.id = emp_login_detail.beat_id
+left join master_designation on master_designation.designation_id = emp_login_detail.designation_id
+where beat_id in (3433,3434,3435,3436) order by master_designation.designation_id
